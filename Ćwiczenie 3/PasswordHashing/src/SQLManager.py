@@ -18,8 +18,8 @@ class SQLManager:
     """ Klasa zarządzająca połączeniem z bazą danych """
     
     # pola statyczne - deklarowane wewnątrz klasy (niestatyczne wewnątrz metod)
-    __connection_hostName = "localhost"
-    __connection_userName = "root"
+    __connection_host = "localhost"
+    __connection_user = "root"
     __connection_password = ""
     __connection_database = "service"
     
@@ -28,7 +28,16 @@ class SQLManager:
         
         """ Zapisuje dane użytkownika przy rejestracji """
         
-        connection = SQLManager.initializeConnection()
+        connection = mysql.connector.connect(
+            host = self.__connection_host,    
+            user = self.__connection_user,
+            password = self.__connection_password,
+            database = self.__connection_database
+        )
+        
+        if connection == False:
+            connection.close()
+            return False, "connection error" # błąd połączenia - "odswież"/"powrót" (obsłużone w klasie User)
         
         cursor = connection.cursor()
         sql = "insert into users values(%s, %s, %s)"
@@ -36,10 +45,12 @@ class SQLManager:
         cursor.execute(sql, params)
         
         if cursor == False:
-            self.closeConnection(cursor, connection)
-            return False
+            cursor.close()
+            connection.close()
+            return False, "query error" # błąd zapytania - "powrót" (obsłużone w klasie User)
         else:
-            self.closeConnection(cursor, connection)
+            cursor.close()
+            connection.close()
             return True
         
     @staticmethod
@@ -47,7 +58,16 @@ class SQLManager:
         
         """ Odczytuje hasz hasła oraz sól przy logowaniu """
         
-        connection = SQLManager.initializeConnection()
+        connection = mysql.connector.connect(
+            host = self.__connection_host,    
+            user = self.__connection_user,
+            password = self.__connection_password,
+            database = self.__connection_database
+        )
+        
+        if connection == False:
+            connection.close()
+            return False, "connection error"
         
         cursor = connection.cursor()
         sql = "select passwordHash, passwordSalt from users, where login like %s"
@@ -55,42 +75,15 @@ class SQLManager:
         cursor.execute(sql, params)
         
         if cursor == False:
-            self.closeConnection(cursor, connection)
-            return False
+            cursor.close()
+            connection.close()
+            return False, "query error"
         else:
             result  = cursor.fetchone()
             password_hash = result[0]
             password_salt = result[1]
             
-            self.closeConnection(cursor, connection)
+            cursor.close()
+            connection.close()
             
             return password_hash, password_salt
-        
-    @staticmethod
-    def initializeConnection(self):
-        
-        """ Inicjuje połączenie z bazą, zarówno przy rejestracji jak i logowaniu """
-        
-        connection = mysql.connector.connect(
-            host = self.__connection_hostName,    
-            user = self.__connection_userName,
-            password = self.__connection_password,
-            database = self.__connection_database
-        )
-        
-        # TODO - scenariusz negatywny
-        if connection == False:
-            print("Database connection error. Program will exit now")
-            exit()
-        else:
-            return connection
-    
-    @staticmethod
-    def closeConnection(cursor, connection):
-        
-        """ Zamyka połączenie z bazą """
-        
-        cursor.close()
-        connection.close()
-        
-        return
