@@ -1,23 +1,12 @@
 # -*- coding: utf-8 -*-
 
-'''
-
-Notki dla Tomka:
-
-1) Wiem, że klasy statyczne są mało "Pythonowe", ale SQLManager od razu skojarzył
-   mi się z "NetworkingManager'em" z projektu z ING i nie mogłem odpuscic :)
-
-2) Komentarz odnosnie pól statycznych jest dla mnie
-    
-'''
-
 import mysql.connector
 
 class SQLManager:
     
-    """ Klasa zarządzająca połączeniem z bazą danych """
+    """ Klasa statyczna zarzadzająca połączeniem z bazą danych """
     
-    # pola statyczne - deklarowane wewnątrz klasy (niestatyczne wewnątrz metod)
+    # notka dla mnie - pola statyczne, deklarowane wewnątrz klasy (niestatyczne wewnątrz metod)
     __connection_host = "localhost"
     __connection_user = "root"
     __connection_password = ""
@@ -37,7 +26,7 @@ class SQLManager:
         
         if connection == False:
             connection.close()
-            return False, "connection error" # błąd połączenia - "odswież"/"powrót" (obsłużone w klasie User)
+            return False
         
         cursor = connection.cursor()
         sql = "insert into users values(%s, %s, %s)"
@@ -47,7 +36,7 @@ class SQLManager:
         if cursor == False:
             cursor.close()
             connection.close()
-            return False, "query error" # błąd zapytania - "powrót" (obsłużone w klasie User)
+            return False
         else:
             cursor.close()
             connection.close()
@@ -67,7 +56,7 @@ class SQLManager:
         
         if connection == False:
             connection.close()
-            return False, "connection error"
+            return False
         
         cursor = connection.cursor()
         sql = "select passwordHash, passwordSalt from users, where login like %s"
@@ -77,7 +66,7 @@ class SQLManager:
         if cursor == False:
             cursor.close()
             connection.close()
-            return False, "query error"
+            return False
         else:
             result  = cursor.fetchone()
             password_hash = result[0]
@@ -87,3 +76,12 @@ class SQLManager:
             connection.close()
             
             return password_hash, password_salt
+        
+'''
+
+Notka dla Tomka:
+    
+Wiem, że klasy statyczne są mało "Pythonowe", ale SQLManager od razu skojarzył
+mi się z "NetworkingManager'em" z projektu z ING i nie mogłem odpuscic :)
+
+'''
