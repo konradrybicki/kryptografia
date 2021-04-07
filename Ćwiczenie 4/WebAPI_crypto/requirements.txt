@@ -1,0 +1,21 @@
+
+cryptography:
+    (klucze, serializacja, encode/decode)
+    - fernet
+    - hazmat.primitives -> serialization
+    - hazmat.primitives.asymmetric -> rsa
+    (podpisywanie)
+    - hazmat.primitives -> hashes
+    - hazmat.primitives.asymmetric -> padding
+    - hazmat.primitives.asymmetric -> utils
+
+fastapi
+pydantic -> BaseModel ?
+
+
+
+Notka dla Tomka
+---------------
+
+Hej, jakbys mógł proszę napisać mi w komentarzu do zadania, czy biblioteki listuje się także w taki sposób, w 
+jaki ja zrobiłem to w przypadku cryptography ("drzewko"), czy raczej zostaje się przy nazwie samego pakietu?
