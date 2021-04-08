@@ -42,11 +42,6 @@ if __name__=="__main__":
     
     message = b"message content"
     
-    try:
-        key = Symetric.generateKey()
-        token = Symetric.encode(message, key)
-        Symetric.decode(token, key)
-    except:
-        print("Test failed.")
-    else:
-        print("Test passed.")
+    key = Symetric.generateKey()
+    token = Symetric.encode(message, key)
+    Symetric.decode(token, key)
