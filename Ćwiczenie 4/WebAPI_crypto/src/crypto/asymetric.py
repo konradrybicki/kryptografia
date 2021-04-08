@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
 
 class Asymetric:
     
     """ Klasa statyczna odpowiadająca za operacje kryptografii asymetrycznej """
     
     @staticmethod
-    def generatePrivateKey():
+    def generatePrivateKey(): # -> _RSAPrivateKey
         
         """ Generuje klucz prywatny """
         
@@ -20,7 +22,7 @@ class Asymetric:
         return privateKey
     
     @staticmethod 
-    def createPublicKey(privateKey):
+    def createPublicKey(privateKey): # -> _RSAPublicKey
         
         """ Tworzy klucz publiczny, z wykorzystaniem wygenerowanego klucza prywatnego """
         
@@ -52,20 +54,95 @@ class Asymetric:
         
         return pem.hex()
         
-    # TODO verify, sign, encode, decode
+    @staticmethod
+    def signMessage(message: bytes, privateKey) -> bytes:
+        
+        """ Podpisuje wiadomosc z wykorzystaniem aktualnie ustawionego klucza prywatnego """
+        
+        signature = privateKey.sign(
+            message,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+                ),
+            hashes.SHA256()
+        )
+        
+        return signature
     
+    @staticmethod
+    def verifyMessage(publicKey, signature: bytes, message: bytes) -> None:
+        
+        """ Weryfikuje wiadomosc z wykorzystaniem klucza publicznego """
+        
+        try:
+            publicKey.verify(
+                signature,
+                message,
+                padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
+        except:
+            return "Message verification failed"
+        else:
+            return "Message verified"
+            
+    @staticmethod
+    def encode(message: bytes, publicKey) -> bytes:
+        
+        """ Szyfruje wiadomosc z wykorzystaniem klucza publicznego """
+        
+        sipher = publicKey.encrypt(
+            message,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
+        
+        return sipher
+    
+    @staticmethod
+    def decode(sipher: bytes, privateKey) -> bytes:
+        
+        """ Deszyfruje wiadomosc z wykorzystaniem klucza prywatnego """
+        
+        message = privateKey.decrypt(
+            sipher,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
+        
+        return message
+
     
 
 if __name__=="__main__":
     
-    # 'test'
+    # 'test' - generowanie kluczy
     
-    try:
-        privateKey = Asymetric.generatePrivateKey()
-        publicKey = Asymetric.createPublicKey(privateKey)
-        Asymetric.serializeKey_private(privateKey)
-        Asymetric.serializeKey_public(publicKey)
-    except:
-        print("Test failed.")
-    else:
-        print("Test passed.")
+    privateKey = Asymetric.generatePrivateKey()
+    publicKey = Asymetric.createPublicKey(privateKey)
+    
+    # 'test' - serializacja
+    
+    serializedKey_private = Asymetric.serializeKey_private(privateKey)
+    serializedKey_public = Asymetric.serializeKey_public(publicKey)
+    
+    # 'test' - podpisanie wiadomosci, weryfikacja
+    
+    message = b"message content"
+    signature = Asymetric.signMessage(message, privateKey)
+    print(Asymetric.verifyMessage(publicKey, signature, message))
+    
+    # 'test' - encode/decode
+    
+    sipher = Asymetric.encode(message, publicKey)
+    message = Asymetric.decode(sipher, privateKey)
