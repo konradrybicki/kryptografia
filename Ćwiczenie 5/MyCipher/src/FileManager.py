@@ -12,8 +12,8 @@ class FileManager:
         pass
         
     @staticmethod
-    def saveFile(file: str, filePath: str):
+    def saveFile(file: [str], filePath: str):
         
-        """ Zapisuje dane do pliku tekstowego """
+        """ Przygotowuje oraz zapisuje dane wyjsciowe do pliku tekstowego """
         
         pass
