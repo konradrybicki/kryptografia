@@ -9,11 +9,32 @@ class FileManager:
         
         """ Odczytuje zawartosc pliku tekstowego, zwracając listę wierszy """
         
-        pass
+        try:
+            f = open(filePath, "r")
+            fileContent = f.readlines()
+            f.close()
+        except:
+            print("Something went wrong while attempting to read to a file. Try again")
+            exit()
+        
+        return fileContent
         
     @staticmethod
-    def saveFile(file: [str], filePath: str):
+    def saveFile(dataToPrepare: [str], filePath: str):
         
-        """ Przygotowuje oraz zapisuje dane wyjsciowe do pliku tekstowego """
+        """ Przygotowuje (konkatenacja) oraz zapisuje dane wyjsciowe do pliku tekstowego """
         
-        pass
+        preparedData = ""
+        
+        for row in dataToPrepare:
+            preparedData += row
+        
+        try:
+            f = open(filePath, "w")
+            f.write(preparedData)
+            f.close
+        except:
+            print("Something went wrong while attempting to save to a file. Try again")
+            exit()
+        
+        return
