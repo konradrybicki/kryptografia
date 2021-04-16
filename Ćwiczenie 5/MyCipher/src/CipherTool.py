@@ -28,7 +28,7 @@ class CipherTool:
                               
             "0", "1"
             
-        ]
+        ] # TODO automatyzacja
         
         cipherKey = {}
         
@@ -55,7 +55,27 @@ class CipherTool:
         
         """ Szyfruje tekst jawny, z wykorzystaniem wygenerowanego klucza """
         
-        pass
+        cipherText = []
+        
+        for plainTextLine in plainText:
+            
+            cipherLine = ""
+            
+            for plainTextLetter in plainTextLine:
+        
+                cipherLetter = ''
+                
+                if plainTextLetter != '\n':
+                    matchingSubstitutions = self.key.get(plainTextLetter)
+                    cipherLetter = matchingSubstitutions[random.randint(0, 1)]
+                else:
+                    cipherLetter = '\n'
+                
+                cipherLine += cipherLetter
+                    
+            cipherText.append(cipherLine)
+        
+        return cipherText
     
     def decrypt(self, cipherText: [str]) -> [str]:
         
