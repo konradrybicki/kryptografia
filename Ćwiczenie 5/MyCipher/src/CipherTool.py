@@ -51,7 +51,7 @@ class CipherTool:
             
         self.key = cipherKey
     
-    def encrypt(self, plainText: [str]) -> [str]:
+    def encrypt(self, plainText: [str]) -> [str]: # TODO refaktoryzacja
         
         """ Szyfruje tekst jawny, z wykorzystaniem wygenerowanego klucza """
         
@@ -59,29 +59,52 @@ class CipherTool:
         
         for plainTextLine in plainText:
             
-            cipherLine = ""
+            cipherTextLine = ""
             
             for plainTextLetter in plainTextLine:
         
-                cipherLetter = ''
+                cipherTextLetter = ''
                 
                 if plainTextLetter != '\n':
                     matchingSubstitutions = self.key.get(plainTextLetter)
-                    cipherLetter = matchingSubstitutions[random.randint(0, 1)]
+                    cipherTextLetter = matchingSubstitutions[random.randint(0, 1)]
                 else:
-                    cipherLetter = '\n'
+                    cipherTextLetter = '\n'
                 
-                cipherLine += cipherLetter
+                cipherTextLine += cipherTextLetter
                     
-            cipherText.append(cipherLine)
+            cipherText.append(cipherTextLine)
         
         return cipherText
     
-    def decrypt(self, cipherText: [str]) -> [str]:
+    def decrypt(self, cipherText: [str]) -> [str]: # TODO refaktoryzacja
         
         """ Odszyfrowuje kryptogram z użyciem klucza, wykorzystanego do jego zaszyfrowania """
         
-        pass
+        plainText = []
+        
+        for cipherTextLine in cipherText:
+            
+            plainTextLine = ""
+            
+            for cipherTextLetter in cipherTextLine:
+        
+                plainTextLetter = ''
+                
+                if cipherTextLetter != '\n':
+                    # przeszukujemy słownik
+                    for plainAlphabetLetter in self.key:
+                        if cipherTextLetter in self.key[plainAlphabetLetter]:
+                            plainTextLetter = plainAlphabetLetter
+                            break
+                else:
+                    plainTextLetter = '\n'
+                
+                plainTextLine += plainTextLetter
+                    
+            plainText.append(plainTextLine)
+        
+        return plainText
     
     def transposeRows(self, cipherText : [str]) -> [str]:
         
