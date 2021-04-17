@@ -51,7 +51,7 @@ class CipherTool:
             
         self.key = cipherKey
     
-    def encrypt(self, plainText: [str]) -> [str]: # TODO refaktoryzacja
+    def encrypt(self, plainText: [str]) -> [str]:
         
         """ Szyfruje tekst jawny, z wykorzystaniem wygenerowanego klucza """
         
@@ -77,7 +77,7 @@ class CipherTool:
         
         return cipherText
     
-    def decrypt(self, cipherText: [str]) -> [str]: # TODO refaktoryzacja
+    def decrypt(self, cipherText: [str]) -> [str]:
         
         """ Odszyfrowuje kryptogram z użyciem klucza, wykorzystanego do jego zaszyfrowania """
         
