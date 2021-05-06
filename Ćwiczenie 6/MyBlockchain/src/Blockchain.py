@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# TODO refaktoryzacja
-
 import hashlib
 import json
 from time import time
@@ -78,3 +76,46 @@ class Blockchain(object):
         else:
             for block in self.__chain:
                 print(json.dumps(block, indent=4, separators=(',', ': ')))
+    
+    def saveData(self):
+        
+        """ Zapisuje sieć oraz transakcje 'oczekujące' do plików z danymi """
+        
+        # 'wrap'
+        
+        chain_dictFormat = {}
+        chain_dictFormat['data'] = self.__chain
+        
+        transactions_dictFormat = {}
+        transactions_dictFormat['data'] = self.__pendingTransactions
+        
+        # zapis
+        
+        blockchainFile = open('Blockchain.txt', 'w')
+        transactionsFile = open('PendingTransactions.txt', 'w')
+        
+        json.dump(chain_dictFormat, blockchainFile)
+        json.dump(transactions_dictFormat, transactionsFile)
+        
+        blockchainFile.close()
+        transactionsFile.close()
+    
+    def loadData(self):
+        
+        """ Odczytuje sieć oraz transakcje 'oczekujące' z plików z danymi """
+        
+        # odczyt
+        
+        blockchainFile = open('Blockchain.txt')
+        transactionsFile = open('PendingTransactions.txt')
+        
+        chain_dictFormat = json.load(blockchainFile)
+        transactions_dictFormat = json.load(transactionsFile)
+        
+        # 'unwrap'
+        
+        self.__chain = chain_dictFormat['data']
+        self.__pendingTransactions = transactions_dictFormat['data']
+        
+        blockchainFile.close()
+        transactionsFile.close()

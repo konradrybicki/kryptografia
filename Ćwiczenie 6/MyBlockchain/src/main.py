@@ -2,11 +2,10 @@
 
 """ Moduł główny, odpowiadający za interakcję z użytkownikiem """
 
-# TODO refaktoryzacja
-
 from src.Blockchain import Blockchain
 
 blockchain = Blockchain()
+blockchain.loadData()
 
 while(True):
     
@@ -37,9 +36,8 @@ while(True):
         amount = input("Amount: ")
         title = input("Title: ")
         
-        # TODO walidacja
-        
         blockchain.addTransaction(sender, recipient, amount, title)
+        blockchain.saveData()
         
         print("New transaction added sucessfully!")
     
