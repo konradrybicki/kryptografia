@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
+# TODO refaktoryzacja
+
 import hashlib
 import json
 from time import time
 
-class Blockchain(object):
-    
-    """ Klasa definiująca strukturę oraz zachowania sieci blockchain przechowującej informacje o transakcjach własnego budżetu """
+import random
+
+class Blockchain(object): 
+     
+    """ Klasa definiująca strukturę oraz zachowania sieci blockchain, przechowującej informacje o transakcjach 'własnego budżetu' """
     
     def __init__(self):
         
@@ -15,20 +19,62 @@ class Blockchain(object):
         self.__chain = []
         self.__pendingTransactions = []
         
-    def addTransaction(self, sender, recipient, amount):
+    def addTransaction(self, sender, recipient, amount, title):
         
         """ Dodaje nową transakcję do listy transakcji oczekujących """
         
-        pass
+        newTransaction = { 
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount,
+            'title': title
+        }
+        
+        self.__pendingTransactions.append(newTransaction)
+        
+        if len(self.__pendingTransactions) == 3:
+            self.__addBlock()
     
-    def addBlock(self):
+    def __addBlock(self):
         
         """ Dodaje do sieci nowy blok, przechowujący informacje o dokładnie trzech transakcjach """
         
-        pass
+        previousBlockHash = ""
         
-    def hashLastBlock(self):
+        if len(self.__chain) == 0:
+            previousBlockHash = "-"
+        else:
+            previousBlockHash = self.__hashLastBlock()
+        
+        newBlock = {
+            "block index": len(self.__chain) + 1,
+            "timestamp": time(),
+            "stored transactions": self.__pendingTransactions,
+            "proof of work": random.randint(10000, 99999),
+            "previous block hash": previousBlockHash
+        }
+        
+        self.__chain.append(newBlock)
+        self.__pendingTransactions = []
+        
+    def __hashLastBlock(self):
         
         """ Hashuje ostatni blok w sieci """
+        
+        lastBlock = self.__chain[-1]
+        lastBlock_stringFormat = json.dumps(lastBlock, sort_keys=True)
+        
+        lastBlock_hashed = hashlib.sha256(lastBlock_stringFormat.encode())
+        lastBlock_hashed_hex = lastBlock_hashed.hexdigest()
     
-        pass
+        return lastBlock_hashed_hex
+    
+    def displayChain(self):
+        
+        """ Wyswietla łańcuch w konsoli """
+        
+        if len(self.__chain) == 0:
+            print("Chain empty.")
+        else:
+            for block in self.__chain:
+                print(json.dumps(block, indent=4, separators=(',', ': ')))
